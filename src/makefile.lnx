@@ -1,0 +1,40 @@
+CC = g++
+
+CFLAGS = \
+	-O2\
+	-fomit-frame-pointer\
+	-ffast-math\
+	-fexpensive-optimizations\
+	-fpeephole\
+	-funroll-loops\
+	-s
+
+OBJDIR = ../obj
+LIB = -lmasking -lalfont `allegro-config --libs`
+
+SRC = \
+	MainDlg.o\
+	MyFont.o\
+	FontPanel.o\
+	PreviewPanel.o\
+	PalettePanel.o\
+	Range.o\
+	ListItemFont.o
+
+
+OBJ = $(addprefix $(OBJDIR)/, $(notdir $(SRC:.cpp=.o)))
+
+all : $(OBJ) FontEd
+
+
+$(OBJDIR)/%.o: %.cpp
+	-$(CC) $(CFLAGS) -o $@ -c $<
+
+
+FontEd: FontEd.cpp $(OBJ)
+	$(CC) $(CFLAGS) -o ../bin/FontEd FontEd.cpp $(OBJ) $(LIB)
+
+clean:
+	-rm $(OBJ)
+	-rm ../bin/FontEd
+

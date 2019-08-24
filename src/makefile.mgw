@@ -1,0 +1,51 @@
+CC = g++
+
+CFLAGS = \
+	-O2\
+	-march=pentium\
+	-fomit-frame-pointer\
+	-ffast-math\
+	-funroll-loops\
+	-finline-functions\
+	-s\
+	-D__GTHREAD_HIDE_WIN32API\
+	-DALLEGRO_STATICLINK\
+	-mwindows
+
+#-DUSE_PNGLOADER\
+
+OBJDIR = ../obj
+#LIB = -lmasking_s -lalfont_s -lldpng_s -lpng -lz -lalleg_s -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lole32 -ldinput -lddraw -ldxguid -lwinmm -ldsound
+LIB = -lmasking_s -lalfont_s -lalleg_s -lkernel32 -luser32 -lgdi32 -lcomdlg32 -lole32 -ldinput -lddraw -ldxguid -lwinmm -ldsound
+
+RES = ../res/icon.res
+
+SRC = \
+	MainDlg.o\
+	MyFont.o\
+	FontPanel.o\
+	PreviewPanel.o\
+	PalettePanel.o\
+	Range.o\
+	ListItemFont.o
+
+
+OBJ = $(addprefix $(OBJDIR)/, $(notdir $(SRC:.cpp=.o)))
+
+all : $(OBJ) FontEd
+
+res:
+	windres -O coff -i icon.rc -o $(RES)
+
+
+$(OBJDIR)/%.o: %.cpp
+	-$(CC) $(CFLAGS) -o $@ -c $<
+
+
+FontEd: FontEd.cpp $(OBJ) res
+	$(CC) $(CFLAGS) -o ../bin/FontEd.exe FontEd.cpp $(OBJ) $(LIB) $(RES)
+
+clean:
+	-rm -f $(OBJDIR)/*.o
+	-rm -f ../bin/FontEd.exe
+
